@@ -4,8 +4,9 @@
 :root {
   /* Surfaces */
   --bg: #ffffff;
+  --off-white:#F7F2E8;
   --section-bg: #f7f2e8;
-  --surface: #ffffff;
+  --surface: #FFFFFF01;
   --surface-alt: #f5efe2;
   --item-bg: #ffffff;
   --input-bg: #fbf8f1;
@@ -104,7 +105,7 @@ a {
 /* ---------------------------------------------------------------------- */
 .page {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--off-white);
   padding: 64px 24px 96px;
 }
 
@@ -113,18 +114,19 @@ a {
 /* ---------------------------------------------------------------------- */
 .audit-section {
   width: 100%;
-  max-width: var(--container-width);
-  margin: 0 auto;
-  background: var(--section-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 40px;
 }
 
 .audit-section__header {
   margin-bottom: 48px;
 }
-
+.audit-card{
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 25px;
+}
 .audit-section__eyebrow {
   font-family: var(--font-display);
   font-weight: 900;
@@ -149,12 +151,7 @@ a {
 /* ---------------------------------------------------------------------- */
 /* Outer white card that wraps the selector + panel                      */
 /* ---------------------------------------------------------------------- */
-.audit-card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 25px;
-}
+
 
 /* ---------------------------------------------------------------------- */
 /* Audit selector (top 3 options)                                        */
