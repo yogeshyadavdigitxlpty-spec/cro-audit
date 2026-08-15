@@ -454,6 +454,14 @@ a {
   color: var(--text);
 }
 
+/* Nested Contact Form 7 embed (Full Site Audit tab) */
+.cf7-embed-frame {
+  width: 100%;
+  min-height: 480px;
+  border: 0;
+  display: block;
+}
+
 /* Deliverables list */
 .deliverables {
   list-style: none;
