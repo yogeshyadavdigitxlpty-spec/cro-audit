@@ -8,7 +8,6 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 async function forwardToWebhook(lead) {
   const webhookUrl = process.env.LEAD_WEBHOOK_URL;
   if (!webhookUrl) {
-    console.log('LEAD_WEBHOOK_URL not configured — lead logged only:', lead);
     return { forwarded: false };
   }
 
@@ -23,6 +22,66 @@ async function forwardToWebhook(lead) {
     console.error('Failed to forward lead to webhook:', err.message);
     return { forwarded: false };
   }
+}
+
+// Emails the lead notification via Resend (https://resend.com) — no SMTP
+// setup needed, just an API key. Safe no-op when unset. Note: until you
+// verify a sending domain in Resend, their sandbox mode only delivers to
+// the email address you signed up to Resend with — verify a domain there
+// once you're ready to notify any address reliably.
+async function sendLeadEmail(lead) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notifyEmail = process.env.LEAD_NOTIFY_EMAIL;
+  if (!apiKey || !notifyEmail) {
+    return { emailed: false };
+  }
+
+  const fromAddress = process.env.LEAD_NOTIFY_FROM || 'Website Audit <onboarding@resend.dev>';
+
+  const html = `
+    <h2>New Full Site Audit request</h2>
+    <p><strong>Name:</strong> ${escapeHtml(lead.fullName)}</p>
+    <p><strong>Email:</strong> ${escapeHtml(lead.email)}</p>
+    <p><strong>Phone:</strong> ${escapeHtml(lead.phone || 'Not provided')}</p>
+    <p><strong>Website:</strong> ${escapeHtml(lead.url)}</p>
+    <p><strong>Submitted at:</strong> ${escapeHtml(lead.submittedAt)}</p>
+  `;
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: [notifyEmail],
+        subject: `New Full Site Audit request — ${lead.fullName}`,
+        html,
+      }),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error('Resend email failed:', response.status, errBody);
+      return { emailed: false };
+    }
+    return { emailed: true };
+  } catch (err) {
+    console.error('Failed to send lead email:', err.message);
+    return { emailed: false };
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[c]));
 }
 
 exports.handler = async (event) => {
@@ -52,9 +111,19 @@ exports.handler = async (event) => {
   };
 
   try {
-    await forwardToWebhook(lead);
+    const [webhookResult, emailResult] = await Promise.all([
+      forwardToWebhook(lead),
+      sendLeadEmail(lead),
+    ]);
+
+    if (!webhookResult.forwarded && !emailResult.emailed) {
+      // Neither delivery method is configured — at least keep a record in
+      // the function logs so the lead isn't silently lost.
+      console.log('Lead captured (no webhook or email configured):', lead);
+    }
+
     // Always return success to the client once the lead is captured server
-    // side — webhook delivery issues are logged, not surfaced to the user.
+    // side — delivery issues are logged, not surfaced to the user.
     return {
       statusCode: 200,
       headers: JSON_HEADERS,
@@ -69,3 +138,4 @@ exports.handler = async (event) => {
     };
   }
 };
+
