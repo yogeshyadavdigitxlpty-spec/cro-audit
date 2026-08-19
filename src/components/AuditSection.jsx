@@ -7,7 +7,7 @@ export default function AuditSection() {
   const [activeId, setActiveId] = useState(AUDIT_TYPES.home);
 
   return (
-    <div className="audit-section" aria-label="Website Conversion Audit">
+    <section className="audit-section" aria-label="Website Conversion Audit">
       <div className="audit-section__header">
         <p className="audit-section__eyebrow">Choose Your Audit</p>
         <p className="audit-section__intro">
@@ -20,6 +20,6 @@ export default function AuditSection() {
         <AuditSelector activeId={activeId} onSelect={setActiveId} />
         <AuditPanel activeId={activeId} />
       </div>
-    </div>
+    </section>
   );
 }

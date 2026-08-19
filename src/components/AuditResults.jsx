@@ -1,5 +1,5 @@
 export default function AuditResults({ result, onReset }) {
-  const { score = 0, findings = [], recommendations = [] } = result || {};
+  const { score = 0, findings = [] } = result || {};
 
   return (
     <div className="results">
@@ -29,21 +29,6 @@ export default function AuditResults({ result, onReset }) {
               <div>
                 <p className="finding-item__title">{finding.title}</p>
                 <p className="finding-item__desc">{finding.description}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <p className="results-section-title">Recommended actions</p>
-        <ul className="finding-list">
-          {recommendations.map((rec, index) => (
-            <li className="finding-item" key={index}>
-              <span className="severity-pill severity-pill--low">Action</span>
-              <div>
-                <p className="finding-item__title">{rec.title}</p>
-                <p className="finding-item__desc">{rec.description}</p>
               </div>
             </li>
           ))}

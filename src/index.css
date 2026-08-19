@@ -4,9 +4,8 @@
 :root {
   /* Surfaces */
   --bg: #ffffff;
-  --off-white:#F7F2E8;
   --section-bg: #f7f2e8;
-  --surface: #FFFFFF01;
+  --surface: #ffffff;
   --surface-alt: #f5efe2;
   --item-bg: #ffffff;
   --input-bg: #fbf8f1;
@@ -105,7 +104,7 @@ a {
 /* ---------------------------------------------------------------------- */
 .page {
   min-height: 100vh;
-  background: var(--off-white);
+  background: var(--bg);
   padding: 64px 24px 96px;
 }
 
@@ -114,19 +113,18 @@ a {
 /* ---------------------------------------------------------------------- */
 .audit-section {
   width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  background: var(--section-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px;
 }
 
 .audit-section__header {
   margin-bottom: 48px;
 }
-.audit-card{
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 25px;
-}
+
 .audit-section__eyebrow {
   font-family: var(--font-display);
   font-weight: 900;
@@ -151,7 +149,12 @@ a {
 /* ---------------------------------------------------------------------- */
 /* Outer white card that wraps the selector + panel                      */
 /* ---------------------------------------------------------------------- */
-
+.audit-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 25px;
+}
 
 /* ---------------------------------------------------------------------- */
 /* Audit selector (top 3 options)                                        */
@@ -242,16 +245,6 @@ a {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: 18px;
-}
-
-/* Once a real result is ready, it takes over the whole panel width instead
-   of sharing space with the static "what you'll receive" sales copy. */
-.audit-panel--results {
-  grid-template-columns: 1fr;
-}
-
-.audit-panel--results .panel {
-  padding: 36px 40px;
 }
 
 .panel {
@@ -439,6 +432,21 @@ a {
   flex-shrink: 0;
 }
 
+.cf7-embed-frame {
+  width: 100%;
+  height: 640px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--item-bg);
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .cf7-embed-frame {
+    height: 720px;
+  }
+}
+
 .pricing-line {
   margin-top: 20px;
   padding-top: 20px;
@@ -449,14 +457,6 @@ a {
 
 .pricing-line strong {
   color: var(--text);
-}
-
-/* Nested Contact Form 7 embed (Full Site Audit tab) */
-.cf7-embed-frame {
-  width: 100%;
-  min-height: 480px;
-  border: 0;
-  display: block;
 }
 
 /* Deliverables list */
@@ -677,21 +677,12 @@ a {
 }
 
 .finding-list {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-/* On wide screens, once results have the full panel width to themselves,
-   lay findings/actions out two-up instead of one long narrow column. */
-@media (min-width: 720px) {
-  .audit-panel--results .finding-list {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
 }
 
 .finding-item {
@@ -702,7 +693,6 @@ a {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  height: 100%;
 }
 
 .severity-pill {
@@ -777,15 +767,15 @@ a {
   .panel {
     padding: 26px;
   }
-
-  .audit-panel--results .panel {
-    padding: 26px;
-  }
 }
 
 @media (max-width: 640px) {
   .page {
     padding: 32px 14px 64px;
+  }
+
+  .audit-section {
+    padding: 22px;
   }
 
   .audit-card {

@@ -14,6 +14,9 @@
 [[headers]]
   for = "/*"
   [headers.values]
+    # Replace with your real WordPress domain(s). This allows the app to be
+    # iframed only on the sites listed here (and itself), instead of DENY
+    # which blocked ALL framing, including your own WordPress embed.
+    Content-Security-Policy = "frame-ancestors 'self' https://yourwordpresssite.com"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "frame-ancestors 'self' https://www.digitxl.com.au"

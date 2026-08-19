@@ -2,23 +2,24 @@ import { useEffect } from 'react';
 import { Lock } from 'lucide-react';
 import DeviceToggle from './DeviceToggle';
 import FormMessage from './FormMessage';
+import LoadingState from './LoadingState';
+import AuditResults from './AuditResults';
 import { auditContent, AUDIT_TYPES } from '../data/auditConfig';
 import { useSimpleAuditForm } from '../utils/useSimpleAuditForm';
 
-export default function ProductAuditForm({ onStateChange }) {
+export default function ProductAuditForm({ onResultsChange }) {
   const content = auditContent[AUDIT_TYPES.product];
   const { url, setUrl, device, setDevice, errors, status, serverError, result, handleSubmit, reset } =
     useSimpleAuditForm(AUDIT_TYPES.product);
 
-  // Report status/result/reset up to AuditPanel, which decides what to show
-  // in the right-hand results slot. This input and button stay mounted and
-  // visible the entire time - idle, loading, success, error - instead of
-  // being replaced by the results screen.
-  useEffect(() => {
-    onStateChange?.({ status, result, reset });
-  }, [status, result, reset, onStateChange]);
+  const hasResults = status === 'success' && Boolean(result);
 
-  const isLoading = status === 'loading';
+  useEffect(() => {
+    onResultsChange?.(hasResults ? result : null);
+  }, [hasResults, result, onResultsChange]);
+
+  if (status === 'loading') return <LoadingState />;
+  if (hasResults) return <AuditResults result={result} onReset={reset} />;
 
   return (
     <>
@@ -50,7 +51,6 @@ export default function ProductAuditForm({ onStateChange }) {
             onChange={(e) => setUrl(e.target.value)}
             aria-invalid={Boolean(errors.url)}
             aria-describedby={errors.url ? 'product-url-error' : undefined}
-            disabled={isLoading}
           />
           {errors.url && (
             <span className="field-error" id="product-url-error">
@@ -59,10 +59,10 @@ export default function ProductAuditForm({ onStateChange }) {
           )}
         </div>
 
-        <DeviceToggle value={device} onChange={setDevice} disabled={isLoading} />
+        <DeviceToggle value={device} onChange={setDevice} />
 
-        <button type="submit" className="btn btn--primary" disabled={isLoading}>
-          {isLoading && <span className="spinner" aria-hidden="true" />}
+        <button type="submit" className="btn btn--primary" disabled={status === 'loading'}>
+          {status === 'loading' && <span className="spinner" aria-hidden="true" />}
           {content.ctaLabel}
         </button>
 
@@ -74,4 +74,3 @@ export default function ProductAuditForm({ onStateChange }) {
     </>
   );
 }
-
